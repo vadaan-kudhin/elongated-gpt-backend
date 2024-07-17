@@ -9,7 +9,7 @@ from src.schema.factories.user_factory import UserFactory
 from src.schema.security import Token
 from src.security.security import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 from src.utils.utils import lifespan
-from src.v0.version_base import router as v0
+from src.endpoints.v0.version_base import router as v0
 
 
 app = FastAPI(lifespan=lifespan)

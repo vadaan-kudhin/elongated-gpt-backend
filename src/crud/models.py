@@ -51,7 +51,6 @@ class ChatRecord(Base):
     user_id = Column(
         INTEGER(unsigned=True),
         ForeignKey('user.id'),
-        unique=True,
         nullable=False,
     )
 
@@ -88,13 +87,17 @@ class MessageRecord(Base):
     response = Column(
         TEXT(collation=_COLLATION),
         unique=True,
-        nullable=False,
+        nullable=True,
     )
-    input = Column(
+    user_input = Column(
         TEXT(collation=_COLLATION),
         unique=True,
         nullable=False,
     )
+    model = Column(
+        String(15, collation=_COLLATION),
+        nullable=False,
+    )
     timestamp = Column(
-        DateTime, nullable=False
+        DateTime, nullable=True
     )

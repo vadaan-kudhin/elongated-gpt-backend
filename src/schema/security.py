@@ -5,7 +5,7 @@ from src.schema.validation import basic_string_validation
 
 class TokenData(BaseModel):
     username: str
-    name: str
+    full_name: str
 
 
 class Token(BaseModel):

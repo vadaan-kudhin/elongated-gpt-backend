@@ -1,9 +1,16 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import List
 
 from pydantic import BaseModel, Field, EmailStr, field_validator
 
 from src.schema.validation import basic_string_validation
+
+
+class OpenAIModel(StrEnum):
+    CHAT_GPT_35 = "CHAT_GPT_35"
+    CHAT_GPT_4 = "CHAT_GPT_4"
+    CHAT_GPT_4O = "CHAT_GPT_4O"
 
 
 class User(BaseModel):
@@ -26,13 +33,14 @@ class User(BaseModel):
         return basic_string_validation(value, "password")
 
 
-class Message(BaseModel):
+class PendingMessage(BaseModel):
     id: int
     chat_id: int
     user_input: str
-    response: str
-    timestamp: datetime
-    class_name: str = "MESSAGE"
+    # response: str | None = None
+    # timestamp: datetime | None = None
+    class_name: str = "PENDING_MESSAGE"
+    model: OpenAIModel
 
     @classmethod
     @field_validator("user_input", mode="before")
@@ -40,9 +48,15 @@ class Message(BaseModel):
         return basic_string_validation(value, "user_input")
 
 
+class CompletedMessage(PendingMessage):
+    response: str
+    timestamp: datetime
+    class_name: str = "COMPLETE_MESSAGE"
+
+
 class Chat(BaseModel):
     id: int
-    messages: List[Message]
+    messages: List[PendingMessage]
     user: User
     class_name: str = "CHAT"
 

@@ -13,7 +13,6 @@ from src.schema.factories.user_factory import UserFactory
 from src.schema.models import User
 from src.schema.security import TokenData
 from src.security.one_time_passwords import OTP
-from src.security.utils import check_scope
 import os
 
 from src.utils.mailing import EmailClient
@@ -54,13 +53,13 @@ def validate_token(
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        password: str = payload.get("password")
+        full_name: str = payload.get("full_name")
 
         if username is None:
             raise exception
         token_data = TokenData(
             username=username,
-            password=password,
+            full_name=full_name,
         )
     except InvalidTokenError:
         raise exception
@@ -118,12 +117,6 @@ async def _get_current_user(
 
     user = UserFactory.create_full_user(data)
 
-    check_scope(
-        user.permissions,
-        security_scopes.scopes,
-        authenticate_value
-    )
-
     return user
 
 
@@ -132,6 +125,6 @@ async def get_current_active_user(
         User, Security(_get_current_user, scopes=[])
     ]
 ):
-    if current_user.status != "ENABLED":
+    if not current_user.enabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user

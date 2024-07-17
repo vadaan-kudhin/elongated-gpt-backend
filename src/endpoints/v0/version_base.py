@@ -1,13 +1,16 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Security
-
+from src.endpoints.v0.users import router as users
+from src.endpoints.v0.chat import router as chat
 from src.schema.models import User
 from src.security.security import (
     get_current_active_user
 )
 
 router = APIRouter(prefix="/v0")
+router.include_router(users)
+router.include_router(chat)
 
 
 @router.get(
